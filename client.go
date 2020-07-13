@@ -11,9 +11,7 @@ import (
 	"flag"
 	"fmt"
 	"math"
-	"net"
 	"os"
-	"time"
 
 	"io/ioutil"
 	"strings"
