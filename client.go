@@ -17,6 +17,7 @@ import (
 	"strings"
 
 	//"github.com/aristanetworks/goarista/netns"
+
 	"github.com/golang/protobuf/proto"
 	pb "github.com/openconfig/gnmi/proto/gnmi"
 	"google.golang.org/grpc"
@@ -211,16 +212,19 @@ func NewContext(ctx context.Context, cfg *Config) context.Context {
 }
 
 // NewGetRequest returns a GetRequest for the given paths
-func NewGetRequest(paths [][]string, origin string) (*pb.GetRequest, error) {
-	req := &pb.GetRequest{
-		Path: make([]*pb.Path, len(paths)),
+func NewGetRequest(paths []string, origin string, jsonIetfEncoding bool) (*pb.GetRequest, error) {
+	req := &pb.GetRequest{Path: make([]*pb.Path, len(paths)), Type: pb.GetRequest_STATE}
+	if jsonIetfEncoding {
+		req.Encoding = pb.Encoding_JSON_IETF
 	}
-	for i, p := range paths {
-		gnmiPath, err := ParseGNMIElements(p)
+	for i, path := range paths {
+		elems := strings.Split(path, "/")
+		pbPath, err := ParseGNMIElements(elems[1:])
 		if err != nil {
 			return nil, err
 		}
-		req.Path[i] = gnmiPath
+		pbPath.Element = []string{} // dont need backwards compatibility
+		req.Path[i] = pbPath
 		req.Path[i].Origin = origin
 	}
 	return req, nil

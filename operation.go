@@ -45,9 +45,9 @@ func GetWithRequest(ctx context.Context, client pb.GNMIClient,
 }
 
 // Get sends a GetRequest to the given client.
-func Get(ctx context.Context, client pb.GNMIClient, paths [][]string,
+func Get(ctx context.Context, client pb.GNMIClient, paths []string,
 	origin string) error {
-	req, err := NewGetRequest(paths, origin)
+	req, err := NewGetRequest(paths, origin, false)
 	if err != nil {
 		return err
 	}
